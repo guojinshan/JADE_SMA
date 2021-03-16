@@ -6,7 +6,6 @@ import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
-import jade.wrapper.StaleProxyException;
 
 public class HelloMain
 {
@@ -39,7 +38,7 @@ public class HelloMain
             AgentController ac = cc.createNewAgent("Hello_" + id, "tp1.agent.HelloWorld", null);
             ac.start();
         }
-        catch (StaleProxyException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
