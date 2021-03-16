@@ -1,0 +1,22 @@
+= Le web sémantique 
+Claude Moulin
+
+
+== RDF / RDSF
+Resource Description Framework (RDF) est un modèle de graphe étiqueté et orienté, destiné à décrire de façon formelle les ressources Web et leurs métadonnées.
+
+== OWL
+-  Il permet de décrire des ontologies dans une forme basée sur RDF.
+-  Une ontologie se constitue de concepts et de propriétés décrivant un domaine particulier.
+
+== SPARQL
+SPARQL permet d’exprimer des requêtes sur des sources de données, écrites nativement en RDF ou accessible grâce à un middleware interprétant RDF.
+
+== RDF
+=== NameSpace
+
+
+
+.................... J'ai pas réussi à prendre de notes déso ...
+
+
