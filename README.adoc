@@ -1,0 +1,511 @@
+= IA04 - Fiche de révision
+
+Pour parler d'IA04, c'est https://team.picasoft.net/biblut/channels/ia04[ici] !
+
+== Jade Programmer's Guide
+
+Voir ce document intéressant http://jade.tilab.com/doc/programmersguide.pdf[ici]
+
+= Médian
+
+== Agent
+
+Système informatique situé dans un environnement, qui agit de façon autonome et flexible pour atteindre les objectifs pour lesquels il a été conçu.
+
+Il reçoit des données de son environnement et peut affecter celui-ci par ses actions.
+
+* Les **compétences** d'un agent sont les services/choses qu'il peut faire (tâches, actions, raisonnements)
+* Ses **tâches** sont les choses qu'il doit faire.
+* Son **but** peut être d'atteindre une certaine situation désirable.
+* Le **monde** est l'environnement dans lequel l'agent est situé.
+
+=== Structure
+* Accessible par son identifiant : **AID**
+* Nom de la forme `nickname@platform-name`, donné lors de sa création
+* Méthode `setup()` initialise l'agent
+
+NOTE: Chaque agent JADE est exécuté sur un thread. L'exécution des threads Java est _préemptive,_ alors que celle des behaviours d'un agent est _coopérative._
+
+=== Types d'agent
+* **Réactifs** : réagissent rapidement à un changement de l'environnement, sans raisonnement.
+* **Délibératifs** : une action de sa part est le fruit d'une réflexion se basant notamment sur ses objectifs.
+* **Hybrides** : Mix des deux, utilisé la plupart du temps.
+
+=== Behaviours
+Un **behaviour** permet à l'agent d'exécuter une tâche.
+
+NOTE: On ajoute les behaviours dans le `setup()` de l'agent : `addBehaviour(new BullshitBehaviour())`.
+
+- Chaque Behaviour surcharge la méthode `action()`.
+- La méthode `done()` indique si le behaviour est terminé ou pas.
+
+Dans certains cas, on peut faire de `action()` une "machine à états", avec une variable `compteur` ; à chaque prise en main, un pas est exécuté et on incrémente le compteur de 1.
+
+==== Types de behaviour
+* **OneShotBehaviour** : s'exécute une seule fois, `done()` retourne `true`.
+* **CyclicBehaviour** : s'exécute à l'infini, `done()` retourne `false`.
+* **WakerBehaviour** : s'exécute une fois, après un certain délai.
+* **TickerBehaviour** : s'exécute à intervalles réguliers.
+* **CompositeBehaviour** : classe de base des behaviours composés de sous-behaviours
+** **SequentialBehaviour** : exécute ses sous-behaviours l'un après l'autre.
+** **ParallelBehaviour** : exécute ses sous-behaviours en parallèle.
+** **FSMBehaviour** : Machine à états finis.
+
+==== Avantages et inconvénients de l'utilisation de behaviours
+**Avantages :**
+
+* Un seul thread Java par agent
+* Meilleures performances (changement de behaviour plus rapide que changement d'agent)
+
+=== Environnement d'un agent
+Il peut être :
+
+* **Accessible / non accessible :** si l'état de l'environnement est complètement observable, l'agent ne doit pas le mémoriser.
+* **Déterministe / non déterministe :** si le prochain état est déterminé par l'état courant et les actions des agents. Le résultat des actions est certain.
+* **Épisodique / séquentiel :** Les actions des agents sont divisées en épisodes indépendants. Des actions peuvent avoir des conséquences à long terme.
+* **Statique / dynamique :** Statique quand la structure de l'environnement ne change pas. L'environnement ne change pas entre deux actions d'un agent.
+* **Discret / continu :** continu quand au moins une variable possède des valeurs réelles comme la vitesse, le positionnement. Discret : paramètres entiers.
+* **Compétitif / collaboratif**
+
+==== Actions des agents et environnement
+
+===== Action : Transformation d'un état global
+* Le monde a un ensemble fini d'états possibles.
+* Une action est une transition d'un état `e1` à `e2`, à condition que l'action soit exécutable.
+* Un opérateur est de la forme `<Pré-condition, suppressions, ajouts>`
+* État du monde = ensemble de formules atomiques dont la conjonction est censée affirmer la validité de cet état.
+* Caractéristiques du monde :
+** Il est **statique** : affecté seulement par les actions d'agents
+** Les actions sont **séquentielles** : pas deux actions en même temps
+** Les actions sont décrites par leurs **résultats.**
+
+.Problème :
+WARNING: Confusion entre ce qui est produit par les agents et ce qui se produit effectivement (entre le geste et son résultat). Un geste devrait être considéré comme une influence et le résultat de plusieurs gestes est obtenu en appliquant les lois de l'univers.
+
+===== Action : Réponse à une influence
+Ce modèle étend le modèle précédent.
+
+* Principes d'**influences** (gestes, tentatives d'actions) et de réactions aux influences.
+* Opérateur de la forme `<pré-condition, post-condition>`
+* État du monde = ensemble de formules atomiques de la forme `p(a1,...,an)` où `p` prédicat d'arité `n` et les `a` constantes ou termes fonctionnels sans variables
+* Prend en compte les conséquences des **actions simultanées** des agents (interactions entre agents).
+* Permet de décrire les actions considérées comme des déplacements dans un espace physique (application de la mécanique classique)
+
+===== Action : Processur informatique
+
+* Monde composé de processus (programmes en cours d'exécution).
+** Processus = automate à états finis, automate à registres, réseaux de Petri
+* On s'intéresse à l'ensemble de ces entités, leur comportement et les interactions qui s'établissent entre elles.
+
+===== Action : Déplacement physique
+* Approche intéressante dans le cas d'agents réactifs planifiant leur trajectoire pour éviter d'entrer en collision, être capables de se rencontrer ou d'évoluer ensemble
+* Comportement d'un agent : mouvement dans un espace euclidien en fonction du temps.
+
+===== Action : Modification locale
+
+* Une action ne concerne que les entités proches de l'agent : cause locale dont les effets se propagent de proche en proche dans les autres portions de l'espace.
+* Monde != ensemble de propositions valides. Monde = réseau dont les noeuds sont des entités réelles (êtres, objets) ou abstraites (idées), et les arcs sont les relations qui les relient.
+
+===== Action : Commande
+Aspect **cybernétique.**
+
+* Action = variation d'un certain nombre de paramètres d'entrée d'un système physique pour obtenir des valeurs particulières des variables de sortie.
+* Action = activité complexe entièrement dirigée vers un but.
+
+== Communication : Messages
+
+.Paradigme **MOM** (Message-Oriented Middleware)
+TIP: Communication asynchrone et persistante entre les entités.
+
+Les agents communiquent par le biais de **messages** dans une boîte aux lettres FIFO.
+
+```java
+ACLMessage m = receive(<template>);
+if(m==null) { block(); }
+else { /*Des trucs*/ }
+```
+
+TIP: Construction d'une réponse à l'émetteur : `message.createReply()`.
+
+=== Attributs d'un message
+
+* Émetteur (défini par défaut)
+* Destinataire(s)
+* Type de message (performatif)
+* Contenu
+
+```java
+/* Création d'un message */
+ACLMessage m = new ACLMessage(ACLMessage.REQUEST);
+
+/* Réception d'un type de message uniquement */
+ACLMessage m = receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+```
+
+NOTE: Des messages peuvent appartenir à une même conversation, identifiée par un `conversationId`.
+
+=== Performatifs
+* **INFORM** : informe qu'une proposition est vraie.
+* **REQUEST** : demande d'exécuter une action.
+* **FAILURE** : problème lors de l'exécution.
+* **AGREE** : accepte d'exécuter une action.
+* **REFUSE** : refuse d'exécuter une action.
+* **CONFIRM** : confirme la véracité d'une proposition.
+* **DISCONFIRM** : infirme la véracité d'une proposition.
+* **NOT-UNDERSTOOD** : pa conpri lol
+
+NOTE: Le performatif d'un message donne sa signification au contenu (REQUEST + "Porte ouverte" = demande d'ouverture de la porte).
+
+== Norme FIPA
+13 attributs :
+
+* `performative`, parmi les 22 disponibles
+* `sender` : émetteur
+* `receiver` : destinataire(s)
+* `content` : contenu
+* `reply-to` : redirection
+* `language` : langage du contenu
+* `encoding` : encodage du contenu
+* `ontology` : ontologie
+* 5 attributs de contrôle de la conversation (identificateur, ...)
+
+=== Protocoles d'interaction
+Patrons de conversation entre agents.
+
+* **Request** :
+** _A_ demande à _B_ d'exécuter une action avec `request`
+** _B_ accepte (`agree`) ou refuse (`refuse`) la demande
+** _B_ communique :
+*** `failure` s'il a échoué
+*** `inform-done` s'il a réussi
+*** `inform-result` s'il a réussi et qu'il donne un résultat
+* **Query** :
+** _A_ envoie un `query-if` ou un `query-ref` à _B_
+** _B_ peut `agree` ou `refuse`. Si il `agree`, il envoie ensuite :
+*** `failure` en cas d'échec
+*** `inform` pour répondre à `query-if`
+*** `inform-result` pour donner le résultat de `query-ref`
+* **Propose** permet à _A_ de proposer à _B_ de faire l'action décrite quand il en recevra son acceptation :
+** _A_ envoie un `propose` à _B_ (_B_ peut avoir fait un `call-for-proposal` auparavant)
+** _B_ envoie `accept-proposal` ou `reject-proposal`
+* **Subscribe** :
+** _A_ souscrit avec `subscribe` auprès de _B_ afin d'être informé d'un changement d'état
+** _B_ répond en envoyant un `inform-result` (contenu : état de l'objet souscrit) dès que l'objet souscrit change.
+* **Contract Net**
+
+== Système multi-agents
+
+Un **conteneur d'agents** est un environnement contenant plusieurs agents.
+
+La **plateforme** contient l'ensemble des conteneurs actifs.
+
+Des agents sont déjà présents dans le conteneur principal lors de sa création :
+
+* **AMS** (Agent Management System) : service de pages blanches (répertoire d'identifiants d'agent (AID)) et de cycle de vie des agents.
+* **DF** (Directory Facilitator) : service de pages jaunes (basé sur le type de service), permet à un agent de trouver d'autres agents pour communiquer.
+* **MTS** ou **ACC** : gèrent les messages.
+
+== Conception : Méthode JADE
+Analyse <--> Conception -> Implémentation & tests
+
+NOTE: La phase d'analyse, contrairement aux deux autres, est indépendante de la plateforme JADE.
+
+=== Analyse
+. **Use cases** : définir les besoins du système
+. **Types d'agent** : un type par utilisateur et par dispositif, un type par ressource. Distinguer graphiquement les humains, les agents et les ressources.
+. **Fonctionnalités des agents** : construire une table des fonctionnalités. Commencer par les plus claires.
+. **Accointances** (relations) : décrire les interactions entre agents.
+. **Raffinement des agents,** nommage, pages jaunes
+. **Déploiement des agents** : diagramme de déploiement indique les hôtes physiques des agents.
+
+Documents résultant de la phase d'analyse :
+
+* Diagramme UML (_use-cases_)
+* Diagramme du SMA
+* Table des fonctionnalités
+* Diagramme de déploiement (comportant les hôtes physiques etc.)
+
+=== Conception
+. **Fusion, renommage, division** des agents.
+. **Spécification des interactions** : table d'interactions pour chaque agent.
+** Une interaction possède un nom, une fonctionnalité associée, un protocole, ...
+. **Patrons de messages**
+. **Description des services**
+. **Interactions agent-ressources**
+. **Interactions agent-utilisateur**
+. **Behaviours internes des agents**
+. **Définition d'une ontologie**
+. **Sélection du langage de contenu**
+
+== Simulation
+Phénomène naturel -> Modèle -> Simulation
+
+* **Simulation continue** : modèle du système sous la forme d'équations différentielles. Résultat : courbe...
+* **Simulation discrète** : modèle soumis à une suite d'évènements le modifiant. Rapide mais plus complexe à programmer.
+* **Simulation par agents** : modèle centré sur les entités et leurs interactions. Permet de rapidement tester une hypothèse, de mettre en évidence l'existence ou non de situations stables.
+
+=== Simulation par agents
+Modélisation d'une **population** : on associe un agent à chaque individu, et on détermine sa structure interne (physique, mentale) et son comportement (réactif, cognitif).
+
+Un agent est situé en `x,y` et possède un voisinage, qu'il peut percevoir localement. Il peut se déplacer dans l'environnement, et modifier l'état des objets et autres agents du voisinage.
+
+Trois concepts fondamentaux :
+
+* Modèle : structure logique de la simulation.
+* Simulation : moteur responsable de la notion de temps.
+* Visualisation.
+
+=== MASON
+
+MASON comporte deux parties bien séparées : le **modèle** et la **visualisation.**
+
+= Final
+
+== Logique modale
+
+Extension de la logique des propositions dont la syntaxe permet d'écrire des propositions bien formées (formules).
+
+TIP: Développée pour étudier différentes modalités -> distinction entre le vrai _nécessaire_ et le vrai _possible._
+
+* Proposition : `la porte est ouverte`
+* Prédicat : `il existex porte(x) ^ ouverte(x)`
+
+Une formule est vraie ou fausse. Soit p, soit non p.
+
+.Logique des propositions
+TIP: `p -> q` : si p et vrai, q est vrai. Si p est faux, q peut être vrai ou faux.
+
+Possibilité, capacité, obligation, connaissance, nécessité... La vie n'est pas binaire.
+
+.Modalité
+NOTE: Forme particulière d'une action, d'un fait, d'une pensée, d'un être, d'un objet.
+
+.Adverbe de modalité
+NOTE: Ce qui modifie le sens d'une phrase entière et pas seulement celui d'un mot isolé.
+
+* `La porte est ouverte` : **connaissance** (peut être vrai à un instant, mais également faux)
+* `Il est possible que la porte soit ouverte` : **possible**
+* `racine de 2 est un nombre irrationnel` : **nécessaire**
+
+=== Principe
+
+* ♦ -> possible
+* ■ -> nécessaire
+* K -> sait que
+* B -> croit que
+* O -> obligatoire
+* A -> permis
+
+Exemple : `♦ la porte est ouverte` (`♦p`)
+
+Si _P_ est un ensemble de propositions, les propositions bien formées (PBF) est le plus petit ensemble contenant _P_ et tq si φ et ψ sont des PBF alors :
+
+* ¬φ est une pbf
+* φ ∨ ψ est une pbf
+* ■φ est une pbf
+* ♦φ est une pbf
+
+.Différence entre logique des propositions et logique modale
+TIP: En logique modale, on définit la théorie des mondes possibles ; un monde est tjr caractérisé par les propos qui y sont vraies ou fausses, mais un _modèle_ peut comporter plusieurs mondes.
+
+La validité de chaque PBF est donnée monde par monde, sans tenir compte des autres.
+
+
+==== Nécessité
+Une proposition `φ` est nécessairement vraie (`■φ`) dans le modèle si elle est vraie dans tous les mondes du modèle.
+
+Mais **cette version est trop simple** : On devrait pouvoir avoir `■φ` valide dans un monde mais pas dans un autre. Un monde n'a des informations que sur les mondes qui lui sont accessibles.
+
+==== Accessibilité
+
+Un monde représente un état de l'environnement d'un agent. Depuis le monde où il est, il en voit d'autres qui lui paraissent possibles (accessibles). Ce qui parait être nécessaire à un agent est ce qu'il voit partout.
+
+
+=== Modèle standard de Kirpke
+
+`M = (W,L,R)` où :
+
+* `W` est un ensemble dénombrable de mondes
+* `L : W -> 2^p` est une fonction qui à partir d'un monde donné, donne l'ensemble des propo atomiques vraies
+* `R est inclus dans W x W` est une relation d'accessibilité entre deux mondes
+
+
+TIP: `M |=_{w} A` -> La fbf `A` est valide dans tout monde `w` de `M`.
+
+=== Propriétés
+
+* Une formule peut être nécessaire dans un monde sans être valide dans tous les mondes : il suffit qu'elle ne soit pas valide dans le monde où elle est nécessaire.
+* Une formule valide dans le modèle est nécessaire dans tous ses mondes
+* Les opérateurs ■ et ♦ sont duals :
+** Quelque chose est possible ssi sa négation n'est pas nécessaire
+** Quelque chose est nécessaire ssi sa négation est impossible (pas possible)
+
+==== Propriété K
+Si les formules `φ -> ψ` et `φ` sont toutes deux nécessaires, alors la formule `ψ` l'est aussi.
+
+==== Propriété Nec (nécessitation)
+Si `φ` est valide dans un modèle, alors `■φ` est valide dans ce modèle : `φ -> ■φ`
+
+==== Logique K
+L'ensemble des formules valides dans tous les modèles standard s'appelle la logique K.
+
+=== Relation d'Accessibilité
+
+* Si tout monde `w` est accessible depuis lui-même, `R` (relation d'accessibilité entre deux mondes) est **réflexive**
+* Si, quand `w'` est accessible à partir de `w`, `w` est accessible à partir de `w'`, `R` est **symétrique**
+* Si, quand `w'` est accessible à partir de `w` et que `w"` est accessible à partir de `w'` alors `w"` est accessible à aprtir de `w` : `R` est **transitive**
+* Si pour toit `w` il existe un monde `w'` accessible alors `R` est **sérielle**
+* Si quand deux mondes `w'` et `w"` sont accessibles à partir de `w` sont accessibles entre eux, `R` est euclidienne
+
+=== Logique modale épistémique
+* Logique de la connaissance et de la croyance, représentée par `■`, ou `K`.
+* `Kφ` signifie l'agent sait `φ` ou l'agent croit `φ`.
+* Connaissance != croyance. Un agent ne doit pas savoir qqch de faux, alors qu'il peut croire qqch de faux.
+* Il faut donc ajouter des axiomes à la logique K : `(T)`, `(D)`, `(4)` et `(5)`.
+** `(T)` : `Kφ -> φ` (s'il connait `φ` alors `φ` est valide - ce qu'il croit est vrai)
+** `(D)` : `Kφ -> ♦φ` (s'il connaît `φ` alors `φ` est possible - sa connaissance n'est pas contradictoire)
+** `(4)` : `Kφ -> KKφ` (s'il connaît `φ` alors il sait qu'il connaît `φ`)
+** `(5)` : `♦φ -> K♦φ` (s'il ne connaît pas `ψ` alors il sait qu'il ne connait pas `ψ` (introspection négative))
+
+=== Logique propositionnelle dynamique (PDL)
+* Logique des programmes, peut se voir comme une logique modale de l'action.
+* _à finir_
+
+== OWL - Ontology Web Language
+
+.Ontologie
+NOTE: Ensemble fini d'axiomes pouvant introduire de nouveaux concepts et propriétés, déclarer des assertions de relations de spécialisation (superclass/subclass) ou de généralisation, déclarer des propriétés de propriétés
+
+.FOAF
+NOTE: Friend of a friend : Ontologie RDF permettant de décrire des personnes et les liens qu'elles entretiennent entre elles.
+
+.RDF
+NOTE: Ressource Description Framework : Modèle de graphe destiné à décrire de façon formelle les ressources web et leurs métadonnées, de façon à permettre le traitement automatique de telles descriptions.
+
+=== Éléments structurants
+
+* **Classes** - `owl:Class`
+* **Attributs** - `owl:DatatypeProperty`
+* **Relations** - `owl:ObjectProperty` : liens que les objets ont entre eux (WOW MERCI)
+* Classes hiérarchisées par l'utilisation de `rdfs:subClassOf`
+
+==== DatatypeProperty
+
+`rdfs:range` pointe vers un type de données XSD parmi lesquels `xsd:string`, `xsd:boolean`
+
+==== ObjectProperty
+Sous-classes de `owl:ObjectProperty` :
+
+* `owl:TransitiveProperty`
+* `owl:SymmetricProperty`
+* `owl:FunctionalProperty`
+
+=== Système à base de connaissance
+* Ontologie : TBox
+* Assertions associées à une TBox : ABox
+
+== SPARQL
+
+.Courte vidéo explicative
+TIP: https://www.youtube.com/watch?v=FvGndkpa4K0
+
+SPARQL est un langage de requêtes dans des bases RDF, qui permet d'écrire des requêtes pour des graphes étiquetés orientés.
+
+=== Forme d'une requête
+
+==== Triplet
+
+* `emp3 title "vice president"`
+* sujet -> titre -> objet
+
+==== Patron de triplet
+Extension d'un triplet RDF où peuvent figurer des variables en place du sujet, du prédicat et de l'objet.
+
+`{ ex:jean foaf:interest ?y . }` -> Tout triplet RDF dont le sujet est la ressource `ex:jean` et dont le prédicat est `foaf:interest`.
+
+==== Patrons de graphe
+Une requête SPARQL contient un patron de graphe RDF, lui-même composé de patrons de triplet.
+
+===== Select
+```
+SELECT ?z ?type
+WHERE {
+  ex:jean foaf:interest ?x .
+  ?z foaf:isPrimaryTopicOf ?x ;
+     rdf:type ?type .
+}
+```
+
+Ci-dessus, sélectionner tous les éléments et leur type, dont le sujet principal est l'intérêt de Jean.
+
+===== Filtrage simple (houba houba)
+```
+SELECT DISTINCT ?person
+  WHERE {
+    ?person foaf:givenname ?pre .
+    FILTER (?pre = "jean")
+}
+```
+
+===== Filtrage évolué (houbi)
+Par expressions régulières :
+
+```
+SELECT DISTINCT ?resume
+  WHERE {
+    ?x ex:hasResume ?resume  .
+    FILTER (regex (?resume, "[mj]\\w{2,4} 2\\d{3} ","i"))
+}
+```
+
+===== Modification des résultats de requête
+* `DISTINCT` : solutions uniques
+* `ORDER BY` : modif de l'ordre
+* `OFFSET` : début à un certain rang
+* `LIMIT` : restriction du nb de solutions
+
+```
+SELECT  ?name
+WHERE   { ?x foaf:name ?name }
+ORDER BY ?name
+LIMIT   5
+OFFSET  10
+```
+
+=== Types de requête
+
+* **ASK** retourne un booléen (vrai si le patron a une solution dans le graphe)
+** `ASK WHERE { ... }`
+* **SELECT** retourne une liste de n-uplets (matchings de l'ensemble des variables vers les éléments du graphe RDF)
+* **CONSTRUCT** construit un graphe RDF sur le patron de graphe
+** `CONSTRUCT { ... }` (`WHERE { ... }`)?
+* **DESCRIBE** crée un graphe dont la forme est fournie par le processeur
+** `DESCRIBE ?x ?y WHERE { ... }`
+
+== REST & SOAP
+
+=== REST
+.**Re**presentational **S**tate **T**ransfer
+NOTE: Modèle idéalisé des interactions dans une application web basé sur la **ressource** - ensemble de contraintes architecturales pour minimiser le temps d'attente et maximiser l'indépendance et l'extensibilité des implémentations de composants.
+
+Point clé de REST : **l'état des données** que les composants communiquent. Ils transfèrent des représentations de l'état d'une donnée.
+
+* Ressource peut être représentée comme :
+** Du XML, du JSON...
+** Une ligne de table de BDD
+* Représentation REST comprend :
+** Contenu (bytes)
+** Méta-données décrivant le contenu
+** Méta-données décrivant les méta-données
+* Deux principes fondamentaux :
+** Accès à toute ressource par une interface uniforme (GET, PUT, POST, DELETE)
+** Toute ressource est identifiée par une URI.
+* Trois classes d'éléments :
+** Éléments de données (**ressources**)
+** Éléments de connexion (**connecteurs**)
+** Éléments de processus (**composants**)
+* Quatre principales méthodes :
+** `get` : obtenir une ressource
+** `put` : créer une ressource
+** `post` : modifier une ressource
+** `delete` : supprimer une ressource
