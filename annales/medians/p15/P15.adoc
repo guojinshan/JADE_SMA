@@ -1,0 +1,142 @@
+= IA04 - Médian P2015
+
+== Exercice 1 _(4 pts)_
+
+_Répondre en quelques lignes aux questions suivantes :_
+
+_1. Dans la conception d'un système multiagents, quelles caractéristiques trouve-t-on dans la table des interactions ?_
+
+TIP: Voir slide 33 du Cours n°4 sur la conception.
+
+- Nom
+- Fonctionnalité
+- Protocole
+- Condition(s) de déclenchement
+- Rôle
+- Type de l'agent
+
+_2. Donner une raison pour laquelle le bon déroulement du scheduling des behaviour d'un agent pourrait être perturbé._
+
+Lorsque l'on met un timer dans une action d'un behaviour. Le behaviour va empêcher le déroulement du scheduling des behaviours le temps que le timer soit fini.
+
+Lorsqu'un behaviour ne se termine jamais et qu'on le crée à de nombreuses reprises, la machine finit par planter.
+
+Lorsqu'il y a une boucle infinie :
+- Si plusieurs behaviours sont programmés au sein d'un SequentialBehaviour et que l'un d'eux ne s'arrête jamais
+- Timer ou `block()` dans un behaviour
+
+_3. Donner au moins cinq performatifs pouvant être impliqués dans les messages d’une conversation de type « Call For Proposal »._
+
+- **Call for proposal :** demande au destinataire de réaliser une proposition.
+- **Propose :** Envoi d'une proposition
+- **Accept-proposal :** acceptation de la proposition
+- **Reject-proposal :** Refus d'une proposition
+- Performatifs d'erreur non spécifiques à ce type de conversation :
+  - **Not-understood**
+  - **Failure**
+
+== Exercice 2 _(6 pts)_
+
+_1. Un agent possède une cellule contenant la chaîne "a". Il est capable d'envoyer des messages à des agents qui répondent en concaténant trois fois le contenu du message. Quand il reçoit une réponse, l’agent remplace le contenu de la cellule par la réponse. Il envoie deux messages, séparés par un petit intervalle de temps, qui contiennent la valeur de la cellule. Que vaut le contenu de celle-ci après les deux réponses ?_
+
+- **Si** la réponse a eu le temps d'arriver entre les deux envois : `aaaaaaaaa`.
+- **Sinon** : `aaa`.
+
+_2. Donner l'algorithme d'un behaviour qui attend des messages pendant une seconde._
+
+```java
+class MyBehaviour extends Behaviour {
+ int delai = 1000; // Délai d'attente
+ boolean end = false;
+ int t = now();
+
+ void action() {
+  t0 = tempsMachine;
+  while(t - t0 < delai) {
+   message = receive();
+   if(message == null) {
+    // Faire des trucs
+   }
+   else block();
+  }
+  end = true;
+ }
+
+ int done() {
+  return end;
+ }
+}
+```
+
+_3. Donner l'algorithme d'un behaviour qui attend l'arrivée d'un message pendant au maximum une seconde._
+
+```java
+class MyBehaviour extends Behaviour {
+ int delai = 1000; // Délai d'attente
+ boolean end = false;
+ int t = now();
+
+ void action() {
+  t0 = tempsMachine;
+  while(t - t0 < delai && message == null) {
+   message = receive();
+   if(message != null) {
+    // Faire des trucs
+   }
+   else block();
+  }
+  end = true;
+ }
+
+ int done() {
+  return end;
+ }
+}
+```
+
+_4. On doit concevoir une classe Behaviour dont la tâche est d'envoyer un message et de réagir soit à une réponse positive, soit à une réponse négative. Décrire l'interface de cette classe pour que la tâche d'un programmeur soit simplifiée._
+
+```java
+// Ce n'est peut être pas la bonne réponse.
+public interface YesOrNoBehaviour
+{
+  public void respondToNegative();
+  public void respondToPositive();
+}
+```
+
+== Exercice 4 _(7 pts)_ : Modélisation de SMA
+
+_Un système virtuel a été créé pour représenter une ville. Vous êtes chargés de la simulation du réseau métropolitain et de la gestion du public qui l’emprunte._
+
+_L’utilisation d’un SMA JADE a été choisie pour répondre à ce besoin. Le réseau métropolitain est composé de lignes qui desservent des trains sur plusieurs stations, d’une station initiale à une station finale. On considèrera en particulier que la ligne allant de la station A à la station B est différente et indépendante de celle qui va de la station B à la station A. Une station est définie par une gare et une ligne. Une gare peut être desservie par plusieurs lignes de train. Exemples : station 1 (Gare 1, ligne A) ; station 2 (Gare 1, ligne B) ; station 3 (Gare 2, ligne B) ; station 4 (Gare 2, ligne C). Un train doit signaler sa position tous les 200m. Un voyageur signale automatiquement son entrée en station et sa sortie de station. Les questions portent sur le problème suivant : le système doit prendre en compte l’affluence sur une ligne pour réguler la fréquence des trains qui y circulent. Il doit donc y avoir davantage de trains qui circulent lorsque de nombreux voyageurs sont sur la ligne (ce sont les voyageurs qui sont entrés dans une station de la ligne et qui ne sont pas sortis par une station de la ligne), et moins de trains lorsqu’il y a peu de voyageurs. La fréquence des trains qui entrent dans une ligne peut varier de 15mn à 3 mn._
+
+_1. Quels sont les principaux types d'agents et leurs rôles, impliqués dans la modélisation du système ?_
+
+WARNING: Ce qui suit est le fruit de simples suppositions.
+
+- Agent **voyageur,** dont le rôle est de signaler chacune de ses entrées et sorties de station.
+- Agent **train,** dont le rôle est de signaler périodiquement sa position sur le réseau.
+- Agent **station,** dont le rôle est de gérer les trains qui arrivent et le compte des voyageurs qui arrivent et repartent.
+- Agent **ligne,** dont le rôle est de garder le compte du nombre de voyageurs dans chaque station.
+- Agent **maître,** dont le rôle est de gérer la suppression et la création de trains sur les lignes en fonction de l'affluence.
+
+_2. On considère que chaque minute un flot de messages permet de réguler la fréquence des trains circulant sur une ligne._
+
+- _Quel type d'agent a la compétence de prendre la décision de faire démarrer un nouveau train ? Sur quelle information prend-il cette décision ?_
+
+Il s'agit de l'agent **maître.** Il se base sur les données représentant le nombre de passagers sur chaque ligne, ainsi que sur les données représentant le nombre de trains sur chaque ligne. On suppose que si le ratio passagers:trains atteint une certaine valeur, un train supplémentaire est démarré, et _vice versa._
+
+- _En déduire les agents en jeu lors de ce scénario._
+
+Les voyageurs envoient toujours leur arrivée ou leur départ à la station concernée, qui met à jour son nombre de voyageurs. Chaque station envoie périodiquement un message aux lignes sur lesquelles elle se trouve afin de les informer de ce nombre. Chaque train envoie tous les 200m la ou les lignes sur lesquelles il se trouve aux agents ligne correspondants. Chaque ligne met à jour, à partir des messages de toutes ses stations et des trains, son affluence totale et le nombre de trains y circulant, et l'envoie à l'agent maître. L'agent maître vérifie pour chaque ligne le ratio passagers:trains, et décide si ne rien faire, démarrer ou arrêter un train.
+
+- _Construire un diagramme, façon agent sniffeur, des messages échangés entre ces agents pour accomplir le scénario. Indiquer sur le diagramme les propriétés des messages_ FIPA _échangés._
+
+_3. Pour des raisons de sécurité, la distance entre deux trains roulant sur une ligne doit être toujours supérieure à 500m._
+
+- _Quel type d'agent a le rôle de faire ralentir un train qui s'approche trop près du train précédent ?_
+
+Encore une fois, il s'agit de l'agent maître, car son rôle est de gérer les trains, qu'il s'agisse d'en démarrer, d'en arrêter ou d'en ralentir.
+
+- _Construire un diagramme, façon agent sniffeur, des messages échangés entre ces agents pour accomplir le scénario. Indiquer sur le diagramme les propriétés des messages_ FIPA _échangés._
