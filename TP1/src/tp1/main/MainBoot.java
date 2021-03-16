@@ -6,7 +6,7 @@ import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 
 public class MainBoot {
-    public static String MAIN_PROPERTIES_FILE = "main.properties";
+    public static String MAIN_PROPERTIES_FILE = "properties/main.properties";
 
     public static void main(String[] args) {
         Runtime rt = Runtime.instance();
