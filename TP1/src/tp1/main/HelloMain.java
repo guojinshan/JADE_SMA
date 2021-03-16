@@ -10,7 +10,7 @@ import jade.wrapper.StaleProxyException;
 
 public class HelloMain
 {
-    public static String SECOND_PROPERTIES_FILE = "second.properties";
+    public static String SECOND_PROPERTIES_FILE = "properties/second.properties";
 
     public static void main(String[] args) {
         Runtime rt = Runtime.instance();
