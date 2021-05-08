@@ -2,10 +2,6 @@
 
 Pour parler d'IA04, c'est https://team.picasoft.net/biblut/channels/ia04[ici] !
 
-== Jade Programmer's Guide
-
-Voir ce document intéressant http://jade.tilab.com/doc/programmersguide.pdf[ici]
-
 = Médian
 
 == Agent
@@ -157,17 +153,21 @@ NOTE: Des messages peuvent appartenir à une même conversation, identifiée par
 NOTE: Le performatif d'un message donne sa signification au contenu (REQUEST + "Porte ouverte" = demande d'ouverture de la porte).
 
 == Norme FIPA
-13 attributs :
+13 attributs(Paramères) :
 
-* `performative`, parmi les 22 disponibles
-* `sender` : émetteur
-* `receiver` : destinataire(s)
-* `content` : contenu
-* `reply-to` : redirection
-* `language` : langage du contenu
-* `encoding` : encodage du contenu
-* `ontology` : ontologie
-* 5 attributs de contrôle de la conversation (identificateur, ...)
+* `performative`: désinge le type de message envoyé
+* `sender` : désigne l'indentité de l'émetteur du message
+* `receiver` : désigne l'indentité de(s) destinataire(s) du message
+* `reply-to` : indique que la réponse au message doit être redirigée vers un autre agent à la place de l'agent émetteur
+* `content` : désigne le contenu du message
+* `language` : désigne le langage avec lequel le contenu est exprimé
+* `encoding` : désigne l'encodage du contenu
+* `ontology` : désigne l'ontologie dans laquelle sont définis les symboles utilisés dans le contenu
+* `protocol` : désigne le protocole d'interaction que l'agent émetteur emploie pour ce message
+* `conversation-id` : introduit un identifiant de conversation utilisé  pour identifier les actes de la même conversation
+* `reply-with` : introduit une expression qui sera utilisée par le destinateur pour indentifier le message, utile lorsque plusieurs conversations de même indentifiant sont utilisées en parallèle
+* `in-reply-to` : désigne une expression qui référencie une précédente action dont le message est une réponse
+* `reply-by` : désigne une date qui indique la limite avant laquelle l'émetteur souhaite recevoir une réponse 
 
 === Protocoles d'interaction
 Patrons de conversation entre agents.
