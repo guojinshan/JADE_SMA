@@ -259,6 +259,35 @@ Trois concepts fondamentaux :
 
 MASON comporte deux parties bien séparées : le **modèle** et la **visualisation.**
 
+== REST & SOAP
+
+=== REST
+.**RE**presentational **S**tate **T**ransfer
+NOTE: Modèle idéalisé des interactions dans une application web basé sur la **ressource** - ensemble de contraintes architecturales pour minimiser le temps d'attente et maximiser l'indépendance et l'extensibilité des implémentations de composants.
+
+Point clé de REST : **l'état des données** que les composants communiquent. Ils transfèrent des représentations de l'état d'une donnée.
+
+* Ressource peut être représentée comme :
+** Du XML, du JSON...
+** Une ligne de table de BDD
+* Représentation REST comprend :
+** Contenu (bytes)
+** Méta-données décrivant le contenu
+** Méta-données décrivant les méta-données
+* Deux principes fondamentaux :
+** Accès à toute ressource par une interface uniforme (GET, PUT, POST, DELETE)
+** Toute ressource est identifiée par une URI.
+* Trois classes d'éléments :
+** Éléments de données (**ressources**)
+** Éléments de connexion (**connecteurs**)
+** Éléments de processus (**composants**)
+* Quatre principales méthodes :
+** `get` : obtenir une ressource
+** `put` : créer une ressource
+** `post` : Mettre à jour/modifier une ressource
+** `delete` : supprimer une ressource
+
+
 = Final
 
 == Logique modale
@@ -481,31 +510,3 @@ OFFSET  10
 ** `CONSTRUCT { ... }` (`WHERE { ... }`)?
 * **DESCRIBE** crée un graphe dont la forme est fournie par le processeur
 ** `DESCRIBE ?x ?y WHERE { ... }`
-
-== REST & SOAP
-
-=== REST
-.**Re**presentational **S**tate **T**ransfer
-NOTE: Modèle idéalisé des interactions dans une application web basé sur la **ressource** - ensemble de contraintes architecturales pour minimiser le temps d'attente et maximiser l'indépendance et l'extensibilité des implémentations de composants.
-
-Point clé de REST : **l'état des données** que les composants communiquent. Ils transfèrent des représentations de l'état d'une donnée.
-
-* Ressource peut être représentée comme :
-** Du XML, du JSON...
-** Une ligne de table de BDD
-* Représentation REST comprend :
-** Contenu (bytes)
-** Méta-données décrivant le contenu
-** Méta-données décrivant les méta-données
-* Deux principes fondamentaux :
-** Accès à toute ressource par une interface uniforme (GET, PUT, POST, DELETE)
-** Toute ressource est identifiée par une URI.
-* Trois classes d'éléments :
-** Éléments de données (**ressources**)
-** Éléments de connexion (**connecteurs**)
-** Éléments de processus (**composants**)
-* Quatre principales méthodes :
-** `get` : obtenir une ressource
-** `put` : créer une ressource
-** `post` : modifier une ressource
-** `delete` : supprimer une ressource
